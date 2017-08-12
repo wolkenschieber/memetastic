@@ -23,7 +23,7 @@
     <string name="main__error_no_picture_selected">Nie wybrano żadnego obrazu.</string>
     <string name="main__share_meme_prompt">Udostępnij Twój Mem za pomocą...</string>
 
-    <string name="main__donate_bitcoin">Wspomóż Bitcoinami</string>
+    <string name="main__donate">Wspomóż</string>
     <string name="main__recommend_app">Poleć</string>
     <string name="main__changelog">Lista zmian</string>
     <string name="main__exit">Wyjdź</string>
@@ -39,18 +39,18 @@
     <string name="creator__hint_top_caption">Górny napis</string>
     <string name="creator__hint_bottom_caption">Dolny napis</string>
     <string name="creator__font">Czcionka</string>
-    <string name="creator__no_keep_editing">Nie, edytuję dalej</string>
+    <string name="creator__keep_editing">Edytuję dalej</string>
 
     <!-- Info -->
-    <string name="info__info">Informacje</string>
-    <string name="info__developed_by">Stworzone przez</string>
-    <string name="info__additionalContact">Więcej informacji</string>
-    <string name="info__licenses">Licencje</string>
-    <string name="info__show_licenses">Pokaż licencje</string>
+    <string name="about">Informacje</string>
+    <string name="developed_by">Stworzone przez</string>
+    <string name="additional_contact">Więcej informacji</string>
+    <string name="licenses">Licencje</string>
+    <string name="show_licenses">Pokaż licencje</string>
     <string name="contributors">Współautorzy</string>
     <string name="more_information">Więcej informacji</string>
-    <string name="info__show_gplv3_license">Pokaż licencję GNU GPLv3</string>
-    <string name="info__show_third_party_licenses">Pokaż licencje dzieł osób trzecich</string>
+    <string name="show_app_license">Pokaż licencję GNU GPLv3</string>
+    <string name="show_third_party_licenses">Pokaż licencje dzieł osób trzecich</string>
     <string name="miscellaneous">Różne</string>
 
     <!-- Settings -->
@@ -58,7 +58,7 @@
     <string name="settings__all_caps">Tylko wielkie litery</string>
     <string name="settings__caps_off">Wyłącz wielkie litery</string>
     <string name="settings__rotate">Obróć</string>
-    <string name="settings__pref_render_quality_title">Jakość obrazu wyjściowego</string>
+    <string name="pref_title__render_quality_editor_percent">Jakość obrazu wyjściowego</string>
     <string name="settings__cleanup_thumbnails">Wyczyść miniatury</string>
     <string name="settings__pref_columns_portrait">Kolumny portretowo</string>
     <string name="settings__pref_columns_landscape">Kolumny horyzontalnie</string>
@@ -66,8 +66,10 @@
     <string name="pref_title__size">Rozmiar</string>
     <string name="pref_title__default_main_mode">Domyślny tryb</string>
     <string name="pref_summary__default_main_mode">Domyślny tryb uruchamiamy podczas startu\n
- (Stwórz, Ulubione lub Zapisane)</string>
+    (Stwórz, Ulubione lub Zapisane)</string>
     <string name="pref_title__functionality">Funkcjonalność</string>
     <string name="pref_summary__auto_save_meme">Automatycznie zapisz mem w przypadku naciśnięcia przycisku powrotu, jeśli wprowadzono jakieś dane</string>
     <string name="pref_title__auto_save_meme">Zapisz w przypadku wciśnięcia wstecz</string>
+    <string name="pref_summary__is_shuffle_meme_categories">Pomieszaj listę memów po zaznaczeniu kategorii</string>
+    <string name="pref_title__is_shuffle_meme_categories">Pomieszaj listę memów</string>
 </resources>

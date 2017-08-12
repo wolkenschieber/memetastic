@@ -13,6 +13,7 @@ import io.github.gsantner.opoc.util.AppSettingsBase;
 
 public class AppSettings extends AppSettingsBase {
     private static final int MAX_FAVS = 50;
+    private static boolean PACKAGE_CHECKED = false;
 
     //#####################
     //## Methods
@@ -22,7 +23,37 @@ public class AppSettings extends AppSettingsBase {
     }
 
     public static AppSettings get() {
-        return new AppSettings(App.get());
+        AppSettings appSettings = new AppSettings(App.get());
+
+
+        /*
+         * Check if a MemeTastic package ID was used to build the app.
+         * If you release something based on MemeTastic you will want to remove the lines below.
+         * In any case: You MUST release the full source code.
+         *
+         * If you publish an app based on MemeTastic you MUST
+         *   Comply with the terms of GPLv3 - See https://www.gnu.org/licenses/gpl-3.0.html
+         *   Keep existing copyright notices in the app and publish full source code
+         *   Show that the app is `based on MemeTastic by MemeTastic developers and contributors`. Include a link to https://github.com/gsantner/memetastic
+         *   Show that the app is not MemeTastic but an modified/custom version, and the original app developers or contributors are not responsible for modified versions
+         *   Not use MemeTastic as app name
+         *
+         *  See more details at
+         *  https://github.com/gsantner/memetastic/blob/master/README.md#licensing
+         */
+        if (!PACKAGE_CHECKED) {
+            PACKAGE_CHECKED = true;
+            String pkg = appSettings.getContext().getPackageName();
+            if (!pkg.equals("io.github.gsantner.memetastic") && !pkg.equals("io.github.gsantner.memetastic.test")) {
+                String message = "\n\n\n" +
+                        "++++  WARNING: MemeTastic is licensed GPLv3.\n" +
+                        "++++  If you distribute the app you MUST publish the full source code.\n" +
+                        "++++  See https://github.com/gsantner/memetastic for more details.\n" +
+                        "++++  This warning is placed in util/AppSettings.java->get()\n\n\n";
+                throw new RuntimeException(message);
+            }
+        }
+        return appSettings;
     }
 
     // Adds a String to a String array and cuts of the last values to match a maximal size
@@ -40,24 +71,33 @@ public class AppSettings extends AppSettingsBase {
     }
 
     public int getRenderQualityReal() {
-        int val = getInt(prefApp, R.string.pref_key__render_quality__percent, 24);
+        int val = getInt(R.string.pref_key__render_quality_editor_percent, 24);
         return (int) (400 + (2100.0 * (val / 100.0)));
     }
 
+    public int getThumbnailQualityReal() {
+        // 24 should be 225. Mostly 3 will be on a phone, so 1080/3=360
+        // Additional reduction of quality to ~2/3 is roughly 225
+        // 150 is very fast loaded, but blurry, 200 is still a little blurry, 225 seems to be
+        // a good tradeoff between quality (400-600) and speed (-125)
+        int val = getInt(R.string.pref_key__thumbnail_quality__percent, 24);
+        return (int) (100 + (939 * (val / 100.0)));
+    }
+
     public void setLastSelectedFont(int value) {
-        setInt(prefApp, R.string.pref_key__last_selected_font, value);
+        setInt(R.string.pref_key__last_selected_font, value);
     }
 
     public int getLastSelectedFont() {
-        return getInt(prefApp, R.string.pref_key__last_selected_font, 0);
+        return getInt(R.string.pref_key__last_selected_font, 0);
     }
 
     public void setFavoriteMemes(String[] value) {
-        setStringArray(prefApp, R.string.pref_key__meme_favourites, value);
+        setStringArray(R.string.pref_key__meme_favourites, value);
     }
 
     public String[] getFavoriteMemes() {
-        return getStringArray(prefApp, R.string.pref_key__meme_favourites);
+        return getStringArray(R.string.pref_key__meme_favourites);
     }
 
     public void appendFavoriteMeme(String meme) {
@@ -95,16 +135,16 @@ public class AppSettings extends AppSettingsBase {
         setFavoriteMemes(newFavs.toArray(new String[newFavs.size()]));
     }
 
-    public void setLastSelectedCategory(int value) {
-        setInt(prefApp, R.string.pref_key__last_selected_category, value);
+    public void setLastSelectedTab(int value) {
+        setInt(R.string.pref_key__last_selected_tab, value);
     }
 
-    public int getLastSelectedCategory() {
-        return getInt(prefApp, R.string.pref_key__last_selected_category, 0);
+    public int getLastSelectedTab() {
+        return getInt(R.string.pref_key__last_selected_tab, 0);
     }
 
     public int getGridColumnCountPortrait() {
-        int count = getInt(prefApp, R.string.pref_key__grid_column_count_portrait, -1);
+        int count = getInt(R.string.pref_key__grid_column_count_portrait, -1);
         if (count == -1) {
             count = 3 + (int) Math.max(0, 0.5 * (Helpers.get().getEstimatedScreenSizeInches() - 5.0));
             setGridColumnCountPortrait(count);
@@ -113,11 +153,11 @@ public class AppSettings extends AppSettingsBase {
     }
 
     public void setGridColumnCountPortrait(int value) {
-        setInt(prefApp, R.string.pref_key__grid_column_count_portrait, value);
+        setInt(R.string.pref_key__grid_column_count_portrait, value);
     }
 
     public int getGridColumnCountLandscape() {
-        int count = getInt(prefApp, R.string.pref_key__grid_column_count_landscape, -1);
+        int count = getInt(R.string.pref_key__grid_column_count_landscape, -1);
         if (count == -1) {
             count = (int) (getGridColumnCountPortrait() * 1.8);
             setGridColumnCountLandscape(count);
@@ -126,18 +166,20 @@ public class AppSettings extends AppSettingsBase {
     }
 
     public void setGridColumnCountLandscape(int value) {
-        setInt(prefApp, R.string.pref_key__grid_column_count_landscape, value);
+        setInt(R.string.pref_key__grid_column_count_landscape, value);
     }
 
-    public boolean isAppFirstStart() {
-        boolean value = getBool(prefApp, R.string.pref_key__app_first_start, true);
-        setBool(prefApp, R.string.pref_key__app_first_start, false);
+    public boolean isAppFirstStart(boolean doSet) {
+        boolean value = getBool(R.string.pref_key__app_first_start, true);
+        if (doSet) {
+            setBool(R.string.pref_key__app_first_start, false);
+        }
         return value;
     }
 
     public boolean isAppCurrentVersionFirstStart() {
-        int value = getInt(prefApp, R.string.pref_key__app_first_start_current_version, -1);
-        setInt(prefApp, R.string.pref_key__app_first_start_current_version, BuildConfig.VERSION_CODE);
+        int value = getInt(R.string.pref_key__app_first_start_current_version, -1);
+        setInt(R.string.pref_key__app_first_start_current_version, BuildConfig.VERSION_CODE);
         return value != BuildConfig.VERSION_CODE && !BuildConfig.IS_TEST_BUILD;
     }
 
@@ -147,5 +189,17 @@ public class AppSettings extends AppSettingsBase {
 
     public int getDefaultMainMode() {
         return getIntOfStringPref(R.string.pref_key__default_main_mode, 0);
+    }
+
+    public boolean isShuffleMemeCategories() {
+        return getBool(R.string.pref_key__is_shuffle_meme_categories, false);
+    }
+
+    public boolean isEditorStatusBarHidden() {
+        return getBool(R.string.pref_key__is_editor_statusbar_hidden, false);
+    }
+
+    public boolean isOverviewStatusBarHidden() {
+        return getBool(R.string.pref_key__is_overview_statusbar_hidden, false);
     }
 }

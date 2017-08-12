@@ -5,6 +5,7 @@ import java.io.File;
 /**
  * Contains colors, fontsizes, categorynames and folders where fonts and memetemplates are saved
  */
+@SuppressWarnings("WeakerAccess")
 public class MemeLibConfig {
     public static class Assets {
         public static final String FONTS = "fonts";
@@ -55,8 +56,7 @@ public class MemeLibConfig {
         return 0;
     }
 
-    public static final int MEME_SHOWCASE_GRID_MAX_IMAGESIZE = 400;
-    public static final int MEME_FULLSCREEN_IMAGESIZE = 1000;
+    public static final int MEME_FULLSCREEN_MAX_IMAGESIZE = 1200;
 
 
     /**

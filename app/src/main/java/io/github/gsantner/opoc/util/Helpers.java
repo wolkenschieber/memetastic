@@ -5,7 +5,7 @@
  * worth it, you can buy me a coke in return. Provided as is without any kind
  * of warranty. No attribution required.                  - Gregor Santner
  *
- * License: Creative Commons Zero (CC0 1.0)
+ * License of this file: Creative Commons Zero (CC0 1.0)
  *  http://creativecommons.org/publicdomain/zero/1.0/
  * ----------------------------------------------------------------------------
  */
@@ -32,45 +32,61 @@ import android.support.annotation.StringRes;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatButton;
+import android.text.Html;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.util.DisplayMetrics;
 import android.webkit.WebView;
+import android.widget.TextView;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.util.Locale;
 
-import io.github.gsantner.memetastic.App;
-import io.github.gsantner.memetastic.BuildConfig;
-import io.github.gsantner.memetastic.R;
-
-@SuppressWarnings({"WeakerAccess", "unused", "SameParameterValue"})
+@SuppressWarnings({"WeakerAccess", "unused", "SameParameterValue", "SpellCheckingInspection"})
 public class Helpers {
-    protected Context context;
+    //########################
+    //## Members, Constructors
+    //########################
+    protected Context _context;
 
-    protected Helpers(Context context) {
-        this.context = context;
+    public Helpers(Context context) {
+        _context = context;
     }
 
-    public static Helpers get() {
-        return new Helpers(App.get());
-    }
-
+    //########################
+    //##     Methods
+    //########################
     public String str(@StringRes int strResId) {
-        return context.getString(strResId);
+        return _context.getString(strResId);
+    }
+
+    static class ResType {
+        public static final String DRAWABLE = "drawable";
+        public static final String STRING = "string";
+        public static final String PLURAL = "plural";
+        public static final String COLOR = "color";
+        public static final String STYLE = "style";
+        public static final String ARRAY = "array";
+        public static final String DIMEN = "dimen";
+        public static final String MENU = "menu";
+        public static final String RAW = "raw";
     }
 
     public Drawable drawable(@DrawableRes int resId) {
-        return ContextCompat.getDrawable(context, resId);
+        return ContextCompat.getDrawable(_context, resId);
     }
 
     public int color(@ColorRes int resId) {
-        return ContextCompat.getColor(context, resId);
+        return ContextCompat.getColor(_context, resId);
     }
 
     public Context context() {
-        return context;
+        return _context;
     }
 
     public String colorToHexString(int intColor) {
@@ -79,35 +95,87 @@ public class Helpers {
 
     public String getAppVersionName() {
         try {
-            PackageManager manager = context.getPackageManager();
-            PackageInfo info = manager.getPackageInfo(context.getPackageName(), 0);
+            PackageManager manager = _context.getPackageManager();
+            PackageInfo info = manager.getPackageInfo(_context.getPackageName(), 0);
             return info.versionName;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
-            return "unknown";
+            return "?";
         }
     }
 
+    public int getResId(final String type, final String name) {
+        return _context.getResources().getIdentifier(name, type, _context.getPackageName());
+    }
 
-    public void openWebpageInExternalBrowser(String url) {
+    public boolean areResIdsAvailable(final String type, final String... names) {
+        for (String name : names) {
+            if (getResId(type, name) == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void openWebpageInExternalBrowser(final String url) {
         Uri uri = Uri.parse(url);
         Intent intent = new Intent(Intent.ACTION_VIEW, uri);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
+        _context.startActivity(intent);
     }
 
-    public void showDonateBitcoinRequest() {
-        if (!BuildConfig.IS_GPLAY_BUILD) {
+    /**
+     * https://stackoverflow.com/a/25267049
+     * Gets a field from the project's BuildConfig. This is useful when, for example, flavors
+     * are used at the project level to set custom fields.
+     *
+     * @param fieldName The name of the field-to-access
+     * @return The value of the field, or {@code null} if the field is not found.
+     */
+    public Object getBuildConfigValue(String fieldName) {
+        try {
+            Class<?> clazz = Class.forName(_context.getPackageName() + ".BuildConfig");
+            Field field = clazz.getField(fieldName);
+            return field.get(null);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public boolean getBuildConfigBoolean(String fieldName, boolean defaultValue) {
+        Object field = getBuildConfigValue(fieldName);
+        if (field != null && field instanceof Boolean) {
+            return (Boolean) field;
+        }
+        return defaultValue;
+    }
+
+    public boolean isGooglePlayBuild() {
+        return getBuildConfigBoolean("IS_GPLAY_BUILD", true);
+    }
+
+    public boolean isFossBuild() {
+        return getBuildConfigBoolean("IS_FOSS_BUILD", false);
+    }
+
+    // Requires donate__bitcoin_* resources (see below) to be available as string resource
+    public void showDonateBitcoinRequest(@StringRes final int strResBitcoinId, @StringRes final int strResBitcoinAmount, @StringRes final int strResBitcoinMessage, @StringRes final int strResAlternativeDonateUrl) {
+        if (!isGooglePlayBuild()) {
             String btcUri = String.format("bitcoin:%s?amount=%s&label=%s&message=%s",
-                    str(R.string.donate__bitcoin_id), str(R.string.donate__bitcoin_amount),
-                    str(R.string.donate__bitcoin_message), str(R.string.donate__bitcoin_message));
+                    str(strResBitcoinId), str(strResBitcoinAmount),
+                    str(strResBitcoinMessage), str(strResBitcoinMessage));
             Intent intent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse(btcUri));
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             try {
-                context.startActivity(intent);
+                _context.startActivity(intent);
             } catch (ActivityNotFoundException e) {
-                openWebpageInExternalBrowser(str(R.string.donate__bitcoin_url));
+                openWebpageInExternalBrowser(str(strResAlternativeDonateUrl));
             }
         }
     }
@@ -121,7 +189,7 @@ public class Helpers {
         linePostfix = linePostfix == null ? "" : linePostfix;
 
         try {
-            br = new BufferedReader(new InputStreamReader(context.getResources().openRawResource(rawResId)));
+            br = new BufferedReader(new InputStreamReader(_context.getResources().openRawResource(rawResId)));
             while ((line = br.readLine()) != null) {
                 sb.append(linePrefix);
                 sb.append(line);
@@ -141,9 +209,9 @@ public class Helpers {
     }
 
     public void showDialogWithRawFileInWebView(String fileInRaw, @StringRes int resTitleId) {
-        WebView wv = new WebView(context);
+        WebView wv = new WebView(_context);
         wv.loadUrl("file:///android_res/raw/" + fileInRaw);
-        AlertDialog.Builder dialog = new AlertDialog.Builder(context)
+        AlertDialog.Builder dialog = new AlertDialog.Builder(_context)
                 .setPositiveButton(android.R.string.ok, null)
                 .setTitle(resTitleId)
                 .setView(wv);
@@ -159,16 +227,16 @@ public class Helpers {
 
     public boolean isConnectedToInternet() {
         ConnectivityManager connectivityManager = (ConnectivityManager)
-                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                _context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetInfo != null && activeNetInfo.isConnectedOrConnecting();
     }
 
     public void restartApp(Class classToStartupWith) {
-        Intent restartIntent = new Intent(context, classToStartupWith);
-        PendingIntent restartIntentP = PendingIntent.getActivity(context, 555,
+        Intent restartIntent = new Intent(_context, classToStartupWith);
+        PendingIntent restartIntentP = PendingIntent.getActivity(_context, 555,
                 restartIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        AlarmManager mgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        AlarmManager mgr = (AlarmManager) _context.getSystemService(Context.ALARM_SERVICE);
         mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 100, restartIntentP);
         System.exit(0);
     }
@@ -176,9 +244,9 @@ public class Helpers {
     public String loadMarkdownForTextViewFromRaw(@RawRes int rawMdFile, String prepend) {
         try {
             return new SimpleMarkdownParser()
-                    .parse(context.getResources().openRawResource(rawMdFile),
-                            SimpleMarkdownParser.FILTER_ANDROID_TEXTVIEW, prepend)
-                    .replaceColor("#000001", color(R.color.accent))
+                    .parse(_context.getResources().openRawResource(rawMdFile),
+                            prepend, SimpleMarkdownParser.FILTER_ANDROID_TEXTVIEW)
+                    .replaceColor("#000001", color(getResId(ResType.COLOR, "accent")))
                     .removeMultiNewlines().replaceBulletCharacter("*").getHtml();
         } catch (IOException e) {
             e.printStackTrace();
@@ -186,8 +254,19 @@ public class Helpers {
         }
     }
 
+    public void setHtmlToTextView(TextView textView, String html) {
+        Spanned spanned;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            spanned = Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY);
+        } else {
+            spanned = Html.fromHtml(html);
+        }
+        textView.setMovementMethod(LinkMovementMethod.getInstance());
+        textView.setText(new SpannableString(spanned));
+    }
+
     public double getEstimatedScreenSizeInches() {
-        DisplayMetrics dm = context.getResources().getDisplayMetrics();
+        DisplayMetrics dm = _context.getResources().getDisplayMetrics();
 
         double density = dm.density * 160;
         double x = Math.pow(dm.widthPixels / density, 2);
@@ -199,7 +278,7 @@ public class Helpers {
     }
 
     public boolean isInPortraitMode() {
-        return context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
+        return _context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
     }
 
     public Locale getLocaleByAndroidCode(String code) {
@@ -214,8 +293,16 @@ public class Helpers {
     //  "en"/"de"/"de-rAt"; Empty string = default locale
     public void setAppLanguage(String androidLocaleString) {
         Locale locale = getLocaleByAndroidCode(androidLocaleString);
-        Configuration config = context.getResources().getConfiguration();
+        Configuration config = _context.getResources().getConfiguration();
         config.locale = locale != null ? locale : Locale.getDefault();
-        context.getResources().updateConfiguration(config, null);
+        _context.getResources().updateConfiguration(config, null);
+    }
+
+    public float px2dp(final float px) {
+        return px / _context.getResources().getDisplayMetrics().density;
+    }
+
+    public float dp2px(final float dp) {
+        return dp * _context.getResources().getDisplayMetrics().density;
     }
 }

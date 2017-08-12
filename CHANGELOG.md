@@ -1,3 +1,27 @@
+### v1.2.1
+- Update opoc
+
+### v1.2.0
+- Empty list: Info text & image
+- Complete rework of MemeCreateActivity
+- Custom image templates: `/sdcard/Pictures/MemeTastic/templates/custom/`
+- Shuffle meme list option
+- Moar memes, fonts
+- Update to android-api26
+- Hide statusbar options
+- Updated save dialog
+- Added padding option in MemeCreate
+- Removed BottomSheet library
+
+### v1.1.1
+- Update opoc/SimpleMarkdownParser
+- Update AboutActivity
+- Update license appearance
+- Rename Activity Info to About
+
+### v1.1.0
+- Better visibility of license terms and copyright
+
 ### v1.0.0
 - Disable forced orientation
 - New memes
