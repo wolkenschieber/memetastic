@@ -20,3 +20,6 @@ Where:
 * **[François Vincent](https://github.com/poussinou)**<br/>~° French translation
 * **[Danilo Raffaelli](https://crowdin.com/profile/Daraf)**<br/>~° Italian translation
 * **[pskosinski](email AT pskosinski DOT pl)**<br/>~° Polish translation
+* **[Luís F.S. Rosa](https://github.com/luisfsr)**<br/>~° Brazilian Portuguese translation
+* **[Laura Arjona Reina](larjona AT larjona DOT net)**<br/>~° Spanish translation
+* **[XzibitusaK]()**<br/>~° Czech translation

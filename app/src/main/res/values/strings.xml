@@ -9,7 +9,6 @@
     <string name="main__create_meme">Create Meme</string>
     <string name="main__delete_meme">Delete meme</string>
 
-    <string name="main__memecat__rage" translatable="false">Rage</string>
     <string name="main__memecat__humans">Humans</string>
     <string name="main__memecat__cartoon">Cartoon</string>
     <string name="main__memecat__animals">Animals</string>
@@ -27,12 +26,12 @@
 
     <string name="main__donate">Donate</string>
     <string name="main__recommend_app">Recommend</string>
-    <string name="main__changelog">Changelog</string>
+    <string name="changelog">Changelog</string>
     <string name="main__exit">Exit</string>
     <string name="main__yes">yes</string>
 
     <string name="main__nodata__favourites">No favourites yet.\nUse the star button of a meme template to add it to the favourites.</string>
-    <string name="main__nodata__custom_templates">No custom templates yet.\nPlaced template images here:\n» Pictures » MemeTastic » templates » custom</string>
+    <string name="main__nodata__custom_templates">No custom templates yet.\nPlaced template images here:%1$s</string>
     <string name="main__nodata__saved">No memes saved yet.\nUse the top save button after editing a meme.</string>
 
     <!-- Creator -->
@@ -58,7 +57,6 @@
     <string name="additional_contact">More informations</string>
     <string name="licenses">Licenses</string>
     <string name="show_licenses">Show licenses</string>
-    <string name="team" translatable="false">Team</string>
     <string name="contributors">Contributors</string>
     <string name="more_information">More information</string>
     <string name="show_app_license">Show GNU GPLv3 license</string>
@@ -90,4 +88,19 @@
     <string name="pref_title__is_statusbar_hidden">Hide statusbar</string>
     <string name="pref_summary__picture_quality__percent">Quality and size of pictures. Higher values mean a longer load time. Depending on device hardware and picture size  the app may not work as expected if the value is above 25%.</string>
     <string name="pref_title__thumbnail_quality__percent">Thumbnail quality</string>
+
+    <!-- Language -->
+    <string name="pref_title__language">Language</string>
+    <string name="pref_desc__language">Change language of this app. Restart app for changes to take effect</string>
+    <string name="error_cannot_create_save_dir">Error: Cannot create save directory</string>
+    <string name="error_storage_permission">Need permission for storage to save memes and templates</string>
+    <string name="main__memecat__other">Other</string>
+    <string name="downloading">Downloading</string>
+    <string name="downloading_failed">Downloading failed</string>
+    <string name="unzipping">Unzipping</string>
+    <string name="downloading_success">Sucessfully downloaded</string>
+    <string name="download_latest_assets_message">This will download fonts and meme templates (about 20 MB data).</string>
+    <string name="download_latest_assets_message_more">In settings you can manually get the latest assets later too.</string>
+    <string name="download_latest_assets_title">Download latest assets</string>
+    <string name="checking_assets_for_update">Checking if there are more recent assets available</string>
 </resources>

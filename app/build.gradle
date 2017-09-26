@@ -2,15 +2,15 @@ apply plugin: 'com.android.application'
 
 ext {
     version_sdk = [
-        compileSdk : 26,
-        buildTools : "26.0.1",
-        minSdk     : 14,
-        //targetSdk: compileSdk,
+            compileSdk: 26,
+            buildTools: "26.0.1",
+            minSdk    : 14,
+            //targetSdk: compileSdk,
     ]
     version_sdk.targetSdk = version_sdk.compileSdk
     version_lib = [
-        appcompat   : "26.0.0",
-        butterknife : "8.7.0",
+            appcompat  : "26.0.0",
+            butterknife: "8.7.0",
     ]
 }
 
@@ -22,15 +22,14 @@ android {
         minSdkVersion version_sdk.minSdk
         targetSdkVersion version_sdk.targetSdk
 
-        versionCode 30
-        versionName "1.2.0"
+        versionCode 37
+        versionName "1.2.7"
 
         applicationId "io.github.gsantner.memetastic"
-        resValue 'string', 'app_name', "MemeTastic"
-        manifestPlaceholders = [appIcon: "@drawable/ic_launcher"]
 
         buildConfigField "boolean", "IS_TEST_BUILD", "false"
         buildConfigField "boolean", "IS_GPLAY_BUILD", "false"
+        buildConfigField("String[]", "APPLICATION_LANGUAGES", '{' + getUsedAndroidLanguages().collect {"\"${it}\""}.join(",")  + '}')
     }
     buildTypes {
         release {
@@ -47,8 +46,6 @@ android {
         }
         flavorTest {
             applicationId "io.github.gsantner.memetastic.test"
-            resValue 'string', 'app_name', "MemeTestic"
-            manifestPlaceholders = [appIcon: "@drawable/ic_launcher_test"]
             versionCode = Integer.parseInt(new Date().format('yyMMdd'))
             versionName = new Date().format('yyMMdd')
             buildConfigField "boolean", "IS_TEST_BUILD", "true"
@@ -59,13 +56,12 @@ android {
         disable 'MissingTranslation'
     }
 
-    sourceSets { main { assets.srcDirs = ['src/main/assets', '../assets'] } }
+    sourceSets { main { assets.srcDirs = ['src/main/assets'] } }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-
 
     // Android standard libs
     compile "com.android.support:appcompat-v7:${version_lib.appcompat}"
@@ -81,6 +77,22 @@ dependencies {
     compile "com.jakewharton:butterknife:${version_lib.butterknife}"
 
     annotationProcessor "com.jakewharton:butterknife-compiler:${version_lib.butterknife}"
+}
+
+@SuppressWarnings(["UnnecessaryQualifiedReference", "SpellCheckingInspection"])
+static String[] getUsedAndroidLanguages() {
+    Set<String> langs = new HashSet<>()
+    new File('.').eachFileRecurse(groovy.io.FileType.DIRECTORIES) {
+        final foldername = it.name
+        if (foldername.startsWith('values-') && !it.canonicalPath.contains("build" + File.separator + "intermediates")) {
+            new File(it.toString()).eachFileRecurse(groovy.io.FileType.FILES) {
+                if (it.name.toLowerCase().endsWith(".xml") && it.getCanonicalFile().getText('UTF-8').contains("<string")) {
+                    langs.add(foldername.replace("values-", ""))
+                }
+            }
+        }
+    }
+    return langs.toArray(new String[langs.size()])
 }
 
 final String RAW_DIR = "app/src/main/res/raw"

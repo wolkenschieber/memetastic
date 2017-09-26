@@ -38,13 +38,13 @@
     <string name="additional_contact">Mehr Informationen</string>
     <string name="developed_by">Entwickelt von</string>
     <string name="about">Über</string>
-    <string name="main__changelog">Änderungen</string>
+    <string name="changelog">Änderungen</string>
     <string name="licenses">Lizenzen</string>
     <string name="show_licenses">Lizenzen anzeigen</string>
     <string name="main__yes">Ja</string>
 
     <string name="main__nodata__favourites">Keine Favoriten.\nBenutze den Stern-Button einer Meme-Vorlage um sie zu favorisieren.</string>
-    <string name="main__nodata__custom_templates">Keine benutzerdefinierten Vorlagen.\nPlatziere eigene Vorlagen hier:\n» Pictures » MemeTastic » templates » custom</string>
+    <string name="main__nodata__custom_templates">Keine benutzerdefinierten Vorlagen.\nPlatziere eigene Vorlagen hier:%1$s</string>
     <string name="main__nodata__saved">Keine gespeicherten Memes.\nBenutze den oberen Speicher-Button nach Bearbeitung eines Memes.</string>
     <string name="main__memecat__custom">Eigene</string>
 
@@ -77,4 +77,15 @@
     <string name="creator__picture">Bild</string>
     <string name="pref_title__thumbnail_quality__percent">Vorschaubild Qualität</string>
     <string name="pref_summary__picture_quality__percent">Qualität und Größe von Bildern. Höhere Werte bedeuten eine erhöhte Ladezeit. Abhängig von Geräte-Hardware und Bildgröße kann die App über einen Wert von 25% nicht wie erwartet funktionieren.</string>
+    <string name="pref_desc__language">Sprache der App ändern. Ein Neustart der App ist erforderlich um die Einstellung zu übernehmen</string>
+    <string name="pref_title__language">Sprache</string>
+    <string name="download_latest_assets_message">Dies wird Schriftarten und Meme Vorlagen (ca. 20 MB) herunterladen</string>
+    <string name="download_latest_assets_title">Aktuellste Zusatzinhalte herunteladen</string>
+    <string name="downloading">Lade herunter</string>
+    <string name="downloading_failed">Herunterladen fehlgeschlagen</string>
+    <string name="downloading_success">Herunterladen erfolgreich</string>
+    <string name="error_cannot_create_save_dir">Fehler: Konnte Speicher Ordner nicht erstellen</string>
+    <string name="error_storage_permission">"Benötige Datei-Berichtigung um Memes zu speichern "</string>
+    <string name="main__memecat__other">Anderes</string>
+    <string name="unzipping">Entpacken</string>
 </resources>

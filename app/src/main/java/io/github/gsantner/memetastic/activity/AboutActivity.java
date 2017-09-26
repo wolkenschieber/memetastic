@@ -11,15 +11,16 @@ import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.TextView;
 
+import net.gsantner.opoc.util.SimpleMarkdownParser;
+
 import java.io.IOException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.github.gsantner.memetastic.R;
-import io.github.gsantner.memetastic.util.Helpers;
-import io.github.gsantner.memetastic.util.HelpersA;
-import io.github.gsantner.opoc.util.SimpleMarkdownParser;
+import io.github.gsantner.memetastic.util.ActivityUtils;
+import io.github.gsantner.memetastic.util.ContextUtils;
 
 @SuppressWarnings("unused")
 public class AboutActivity extends AppCompatActivity {
@@ -60,18 +61,18 @@ public class AboutActivity extends AppCompatActivity {
         textLicense.setMovementMethod(LinkMovementMethod.getInstance());
         textContributors.setMovementMethod(LinkMovementMethod.getInstance());
 
-        Helpers helpers = Helpers.get();
-        helpers.setHtmlToTextView(textTeam,
-                Helpers.get().loadMarkdownForTextViewFromRaw(R.raw.maintainers, "")
+        ContextUtils cu = ContextUtils.get();
+        cu.setHtmlToTextView(textTeam,
+                ContextUtils.get().loadMarkdownForTextViewFromRaw(R.raw.maintainers, "")
         );
 
-        helpers.setHtmlToTextView(textContributors,
-                Helpers.get().loadMarkdownForTextViewFromRaw(R.raw.contributors, "")
+        cu.setHtmlToTextView(textContributors,
+                cu.loadMarkdownForTextViewFromRaw(R.raw.contributors, "")
         );
 
         // License text MUST be shown
         try {
-            helpers.setHtmlToTextView(textLicense,
+            cu.setHtmlToTextView(textLicense,
                     SimpleMarkdownParser.get().parse(getString(R.string.copyright_license_text_official).replace("\n", "  \n"),
                             "", SimpleMarkdownParser.FILTER_ANDROID_TEXTVIEW).getHtml()
             );
@@ -90,26 +91,29 @@ public class AboutActivity extends AppCompatActivity {
         }
     }
 
-    @OnClick(R.id.about__activity__text_app_version)
-    public void onVersionClicked(View v) {
-        Helpers.get().openWebpageInExternalBrowser(getString(R.string.app_www_source));
-    }
-
     @OnClick({R.id.about__activity__text_app_version, R.id.about__activity__button_third_party_licenses, R.id.about__activity__button_app_license})
     public void onButtonClicked(View v) {
         Context context = v.getContext();
         switch (v.getId()) {
             case R.id.about__activity__text_app_version: {
-                HelpersA.get(this).openWebpageInExternalBrowser(getString(R.string.app_www_source));
+                try {
+                    ActivityUtils.get(this).showDialogWithHtmlTextView(R.string.changelog, new SimpleMarkdownParser().parse(
+                            getResources().openRawResource(R.raw.changelog),
+                            "", SimpleMarkdownParser.FILTER_ANDROID_TEXTVIEW, SimpleMarkdownParser.FILTER_CHANGELOG
+                            ).getHtml()
+                    );
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 break;
             }
             case R.id.about__activity__button_app_license: {
-                HelpersA.get(this).showDialogWithHtmlTextView(R.string.licenses, Helpers.get().readTextfileFromRawRes(R.raw.license, "", ""), false, null);
+                ActivityUtils.get(this).showDialogWithHtmlTextView(R.string.licenses, ContextUtils.get().readTextfileFromRawRes(R.raw.license, "", ""), false, null);
                 break;
             }
             case R.id.about__activity__button_third_party_licenses: {
                 try {
-                    HelpersA.get(this).showDialogWithHtmlTextView(R.string.licenses, new SimpleMarkdownParser().parse(
+                    ActivityUtils.get(this).showDialogWithHtmlTextView(R.string.licenses, new SimpleMarkdownParser().parse(
                             getResources().openRawResource(R.raw.licenses_3rd_party),
                             "", SimpleMarkdownParser.FILTER_ANDROID_TEXTVIEW).getHtml()
                     );
