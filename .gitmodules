@@ -3,4 +3,4 @@
 	url = https://github.com/gsantner/memetastic-metadata-latest.git
 [submodule "assets"]
 	path = assets
-	url = ssh://git@github.comgsantner/memetastic.git
+	url = https://github.com/gsantner/memetastic-assets.git
