@@ -16,6 +16,7 @@ import io.github.gsantner.memetastic.App;
 import io.github.gsantner.memetastic.BuildConfig;
 import io.github.gsantner.memetastic.R;
 import io.github.gsantner.memetastic.service.AssetUpdater;
+import io.github.gsantner.memetastic.ui.MemeItemAdapter;
 
 public class AppSettings extends AppSettingsBase {
     private static final int MAX_FAVS = 50;
@@ -147,6 +148,10 @@ public class AppSettings extends AppSettingsBase {
 
     public int getLastSelectedTab() {
         return getInt(R.string.pref_key__last_selected_tab, 0);
+    }
+
+    public int getMemeListViewType() {
+        return getIntOfStringPref(R.string.pref_key__memelist_view_type, MemeItemAdapter.VIEW_TYPE__PICTURE_GRID);
     }
 
     public int getGridColumnCountPortrait() {
