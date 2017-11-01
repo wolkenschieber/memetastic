@@ -72,7 +72,7 @@ import io.github.gsantner.memetastic.util.ContextUtils;
 import io.github.gsantner.memetastic.util.PermissionChecker;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, ViewPager.OnPageChangeListener {
     public static final int REQUEST_LOAD_GALLERY_IMAGE = 50;
     public static final int REQUEST_TAKE_CAMERA_PICTURE = 51;
     public static final int REQUEST_SHOW_IMAGE = 52;
@@ -80,7 +80,6 @@ public class MainActivity extends AppCompatActivity
     public static final String IMAGE_POS = "image_pos";
 
     private static boolean _isShowingFullscreenImage = false;
-    private boolean _areTabsReady = false;
 
     @BindView(R.id.toolbar)
     Toolbar _toolbar;
@@ -145,7 +144,8 @@ public class MainActivity extends AppCompatActivity
 
         // Setup _toolbar
         setSupportActionBar(_toolbar);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, _drawer, _toolbar, R.string.main__navdrawer__open, R.string.main__navdrawer__close);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, _drawer, _toolbar,
+                R.string.main__navdrawer__open, R.string.main__navdrawer__close);
         _drawer.addDrawerListener(toggle);
         toggle.syncState();
         _navigationView.setNavigationItemSelectedListener(this);
@@ -177,12 +177,10 @@ public class MainActivity extends AppCompatActivity
             tab.setText(cat);
             _tabLayout.addTab(tab);
         }
-        _areTabsReady = true;
 
         _viewPager.setAdapter(new MemePagerAdapter(getSupportFragmentManager(), _tagKeys.length, _tagValues));
 
         _tabLayout.setupWithViewPager(_viewPager);
-
 
         selectTab(app.settings.getLastSelectedTab(), app.settings.getDefaultMainMode());
 
@@ -191,7 +189,7 @@ public class MainActivity extends AppCompatActivity
         //
         // Actions based on build type or version
         //
-        _navigationView.getMenu().findItem(R.id.action_donate_bitcoin).setVisible(!BuildConfig.IS_GPLAY_BUILD);
+        _navigationView.getMenu().findItem(R.id.action_donate).setVisible(!BuildConfig.IS_GPLAY_BUILD);
 
 
         // Show first start dialog / changelog
@@ -220,6 +218,18 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    public void updateHiddenNavOption() {
+        MenuItem hiddenItem = _navigationView.getMenu().findItem(R.id.action_mode_hidden);
+        for (String hidden : app.settings.getHiddenMemesTemplate()) {
+            MemeData.Image image = MemeData.findImage(new File(hidden));
+            if (image != null) {
+                hiddenItem.setVisible(true);
+                return;
+            }
+        }
+        hiddenItem.setVisible(false);
+    }
+
     @SuppressWarnings("ConstantConditions")
     private void selectTab(int pos, int mainMode) {
         MenuItem navItem = null;
@@ -234,6 +244,9 @@ public class MainActivity extends AppCompatActivity
                 break;
             case 2:
                 navItem = _navigationView.getMenu().findItem(R.id.action_mode_saved);
+                break;
+            case 3:
+                navItem = _navigationView.getMenu().findItem(R.id.action_mode_hidden);
                 break;
         }
 
@@ -269,12 +282,14 @@ public class MainActivity extends AppCompatActivity
             }
         } catch (Exception ignored) {
         }
+        _viewPager.addOnPageChangeListener(this);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(_localBroadcastReceiver);
+        _viewPager.removeOnPageChangeListener(this);
     }
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -323,8 +338,8 @@ public class MainActivity extends AppCompatActivity
                 startActivity(Intent.createChooser(i, getString(R.string.main__share_meme)));
                 return true;
             }
-            case R.id.action_donate_bitcoin: {
-                ContextUtils.get().showDonateBitcoinRequest(R.string.donate__bitcoin_id, R.string.donate__bitcoin_amount, R.string.donate__bitcoin_message, R.string.donate__bitcoin_url);
+            case R.id.action_donate: {
+                ContextUtils.get().openWebpageInExternalBrowser(getString(R.string.donate__url));
                 return true;
             }
             case R.id.action_homepage_code: {
@@ -371,6 +386,20 @@ public class MainActivity extends AppCompatActivity
                     imageList = MemeData.getCreatedMemes();
                 }
                 _toolbar.setTitle(R.string.memelist_data_mode__saved);
+                break;
+            }
+
+            case R.id.action_mode_hidden: {
+                _currentMainMode = 3;
+                imageList = new ArrayList<>();
+
+                for (String hidden : app.settings.getHiddenMemesTemplate()) {
+                    MemeData.Image image = MemeData.findImage(new File(hidden));
+                    if (image != null) {
+                        imageList.add(image);
+                    }
+                }
+                _toolbar.setTitle(R.string.memelist_data_mode__hidden);
                 break;
             }
         }
@@ -584,7 +613,8 @@ public class MainActivity extends AppCompatActivity
                 }
                 case AppCast.ASSETS_LOADED.ACTION: {
                     selectTab(_tabLayout.getSelectedTabPosition(), _currentMainMode);
-                    return;
+                    updateHiddenNavOption();
+                    break;
                 }
             }
         }
@@ -687,4 +717,28 @@ public class MainActivity extends AppCompatActivity
         return handleBarClick(item);
     }
 
+    @Override
+    public void onPageScrolled(int i, float v, int i1) {
+
+    }
+
+    @Override
+    public void onPageSelected(int i) {
+        app.settings.setLastSelectedTab(i);
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int i) {
+
+    }
+
+    public void selectCreateMainMode() {
+        MenuItem createItem = _navigationView.getMenu().findItem(R.id.action_mode_create);
+        onNavigationItemSelected(createItem);
+        createItem.setChecked(true);
+    }
+
+    public void recreateFragmentsAfterUnhiding(){
+        _viewPager.getAdapter().notifyDataSetChanged();
+    }
 }
