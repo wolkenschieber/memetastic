@@ -226,8 +226,8 @@ public class MemeCreateActivity extends AppCompatActivity implements ColorPicker
         prepareForSaving();
         outState.putSerializable("memeObj", _memeEditorElements);
         outState.putBoolean("captionPosition", _isBottom);
-        outState.putBoolean("captionEditBar", _editBar.getVisibility() == View.VISIBLE);
-        outState.putString("captionText", _create_caption.getText().toString());
+        outState.putBoolean("captionEditBar", _editBar != null && _editBar.getVisibility() == View.VISIBLE);
+        outState.putString("captionText", _create_caption != null ? _create_caption.getText().toString() : "");
         this._savedInstanceState = outState;
     }
 
@@ -484,7 +484,7 @@ public class MemeCreateActivity extends AppCompatActivity implements ColorPicker
 
         String filename = String.format(Locale.getDefault(), "%s_%s.jpg", getString(R.string.app_name), AssetUpdater.FORMAT_MINUTE_FILE.format(new Date(_memeSavetime)));
         File fullpath = new File(folder, filename);
-        boolean wasSaved = ContextUtils.get().writeImageToFileJpeg(fullpath, _lastBitmap) != null;
+        boolean wasSaved = ContextUtils.get().writeImageToFileJpeg(fullpath, _lastBitmap);
         if (wasSaved && showDialog) {
 
             AlertDialog.Builder dialog = new AlertDialog.Builder(this);

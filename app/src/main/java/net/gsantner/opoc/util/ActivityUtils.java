@@ -1,14 +1,13 @@
-/*
- * ------------------------------------------------------------------------------
- * Gregor Santner <gsantner.net> wrote this. You can do whatever you want
- * with it. If we meet some day, and you think it is worth it, you can buy me a
- * coke in return. Provided as is without any kind of warranty. Do not blame or
- * sue me if something goes wrong. No attribution required.    - Gregor Santner
+/*#######################################################
  *
- * License: Creative Commons Zero (CC0 1.0)
- *  http://creativecommons.org/publicdomain/zero/1.0/
- * ----------------------------------------------------------------------------
- */
+ *   Maintained by Gregor Santner, 2016-
+ *   https://gsantner.net/
+ *
+ *   License: Apache 2.0
+ *  https://github.com/gsantner/opoc/#licensing
+ *  https://www.apache.org/licenses/LICENSE-2.0
+ *
+#########################################################*/
 package net.gsantner.opoc.util;
 
 import android.app.Activity;
@@ -94,16 +93,16 @@ public class ActivityUtils extends net.gsantner.opoc.util.ContextUtils {
     }
 
     public void hideSoftKeyboard() {
-        InputMethodManager inputMethodManager = (InputMethodManager) _activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        if (_activity.getCurrentFocus() != null && _activity.getCurrentFocus().getWindowToken() != null) {
-            inputMethodManager.hideSoftInputFromWindow(_activity.getCurrentFocus().getWindowToken(), 0);
+        InputMethodManager imm = (InputMethodManager) _activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        if (imm != null && _activity.getCurrentFocus() != null && _activity.getCurrentFocus().getWindowToken() != null) {
+            imm.hideSoftInputFromWindow(_activity.getCurrentFocus().getWindowToken(), 0);
         }
     }
 
     public void showSoftKeyboard() {
-        InputMethodManager inputMethodManager = (InputMethodManager) _activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        if (_activity.getCurrentFocus() != null && _activity.getCurrentFocus().getWindowToken() != null) {
-            inputMethodManager.showSoftInput(_activity.getCurrentFocus(), InputMethodManager.SHOW_FORCED);
+        InputMethodManager imm = (InputMethodManager) _activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        if (imm != null && _activity.getCurrentFocus() != null && _activity.getCurrentFocus().getWindowToken() != null) {
+            imm.showSoftInput(_activity.getCurrentFocus(), InputMethodManager.SHOW_FORCED);
         }
     }
 
@@ -151,7 +150,7 @@ public class ActivityUtils extends net.gsantner.opoc.util.ContextUtils {
         _activity.getWindow().setAttributes(attrs);
     }
 
-    public void showRateOnGplayDialog() {
+    public void showGooglePlayEntryForThisApp() {
         String pkgId = "details?id=" + _activity.getPackageName();
         Intent goToMarket = new Intent(Intent.ACTION_VIEW, Uri.parse("market://" + pkgId));
         goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
